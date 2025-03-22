@@ -1,12 +1,15 @@
 package frameworks
 
-import "github.com/urfave/cli/v2"
+import (
+	"github.com/Nexo/cmd/midel"
+	"github.com/urfave/cli/v2"
+)
 
 type framework struct {
 	Stander interface {
 		CreatStanderNode()
 	}
-	Advanced interface{
+	Advanced interface {
 		CreatAdvancedNode()
 	}
 
@@ -14,4 +17,9 @@ type framework struct {
 		NodeFunc() *cli.Command
 	}
 
+	Json interface {
+		searchJSON(val string)
+		readJSON(filter func(map[string]interface{}) bool) []map[string]interface{}
+		WritJSON(val midel.Blueprints) error
+	}
 }

@@ -1,4 +1,4 @@
-package main
+package frameworks
 
 import (
 	"bytes"
@@ -6,27 +6,20 @@ import (
 	"fmt"
 
 	"os"
+
+	"github.com/Nexo/cmd/midel"
 )
 
-type Blueprints struct {
-	Name string `json:"name"`
-	Libs string `json:"libs"`
-}
-
-func main() {
-	// val := Blueprints{
-	// 	Name: "test2",
-	// 	Libs: "nodemon",
-	// }
+func searchJSON(val string) {
 	filter := func(data map[string]interface{}) bool {
-		if name, ok := data["name"]; ok {
-			return name == "achraf"
+		if name, ok := data["libs"]; ok {
+			return name == val
 		}
 		return false
 	}
-	//WritJSON(val)
-	fmt.Println(readJSON(filter)[1]["name"])
+	fmt.Println(readJSON(filter)[1]["libs"])
 }
+
 func readJSON(filter func(map[string]interface{}) bool) []map[string]interface{} {
 	datas := []map[string]interface{}{}
 
@@ -45,8 +38,8 @@ func readJSON(filter func(map[string]interface{}) bool) []map[string]interface{}
 	return filteredData
 }
 
-func WritJSON(val Blueprints) error {
-	var data []Blueprints
+func WritJSON(val midel.Blueprints) error {
+	var data []midel.Blueprints
 	databayte, err := os.ReadFile("test.json")
 	if err != nil {
 		return err
