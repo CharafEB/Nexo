@@ -1,67 +1,114 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
+	//"bytes"
+	//"encoding/json"
 	"fmt"
+	"log"
+	"path/filepath"
 
 	"os"
+	//"github.com/Nexo/cmd/midel"
 )
 
-type Blueprints struct {
-	Name string `json:"name"`
-	Libs string `json:"libs"`
-}
+var (
+	structF []string
+	folder  []string
+)
 
 func main() {
-	// val := Blueprints{
-	// 	Name: "test2",
-	// 	Libs: "nodemon",
+	// test1 := midel.Blueprints{
+	// 	Name: "ForCheckFunc",
+	// 	Libs: "express",
+	// 	StructType: "Free",
 	// }
-	filter := func(data map[string]interface{}) bool {
-		if name, ok := data["name"]; ok {
-			return name == "achraf"
+	// CheckJSON("ForCheckFunc", test1)
+	// filter := func(data map[string]interface{}) bool {
+	// 	if name, ok := data["name"]; ok {
+	// 		return name == "achraf1"
+	// 	}
+	// 	return false
+	// }
+	// WritJSON(test1)
+	// fmt.Println(readJSON(filter))
+	// if fmt.Sprint(readJSON(filter)) == "[]"{
+	// 	fmt.Print("empty")
+	// }
+
+	if err := BuilsStruct(&structF, &folder, "./"); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("structF:%s , folder:%s", structF, folder)
+
+}
+
+func BuilsStruct(valS, valF *[]string, path string) error {
+	err := filepath.WalkDir(path, func(fullPath string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
 		}
-		return false
-	}
-	//WritJSON(val)
-	fmt.Println(readJSON(filter)[1]["name"])
-}
-func readJSON(filter func(map[string]interface{}) bool) []map[string]interface{} {
-	datas := []map[string]interface{}{}
 
-	file, _ := os.ReadFile("test.json")
-	json.Unmarshal(file, &datas)
-
-	filteredData := []map[string]interface{}{}
-
-	for _, data := range datas {
-		// Do some filtering
-		if filter(data) {
-			filteredData = append(filteredData, data)
+		if entry.IsDir() {
+			*valF = append(*valF, fullPath)
+		} else {
+			*valS = append(*valS, fullPath)
 		}
-	}
 
-	return filteredData
+		return nil
+	})
+
+	return err
 }
 
-func WritJSON(val Blueprints) error {
-	var data []Blueprints
-	databayte, err := os.ReadFile("test.json")
-	if err != nil {
-		return err
-	}
-	if err := json.Unmarshal(databayte, &data); err != nil {
-		return err
-	}
+// func CheckJSON(val string , blue midel.Blueprints) error {
+// 	filter := func(data map[string]interface{}) bool {
+// 		if name, ok := data["name"]; ok {
+// 			return name == val
+// 		}
+// 		return false
+// 	}
+// 	if fmt.Sprint(readJSON(filter)) != "[]"{
+// 		log.Fatal("This name tooken pick another name")
+// 	}
+// 	WritJSON(blue)
+// 	return nil
+// }
 
-	fmt.Print(data)
-	data = append(data, val)
-	reqBodyBytes := new(bytes.Buffer)
-	json.NewEncoder(reqBodyBytes).Encode(data)
+// func readJSON(filter func(map[string]interface{}) bool) []map[string]interface{} {
+// 	datas := []map[string]interface{}{}
 
-	if err := os.WriteFile("test.json", reqBodyBytes.Bytes(), os.ModePerm); err != nil {
-		return err
-	}
-	return nil
-}
+// 	file, _ := os.ReadFile("test1.json")
+// 	json.Unmarshal(file, &datas)
+
+// 	filteredData := []map[string]interface{}{}
+
+// 	for _, data := range datas {
+// 		// Do some filtering
+// 		if filter(data) {
+// 			filteredData = append(filteredData, data)
+// 		}
+// 	}
+
+// 	return filteredData
+// }
+
+// func WritJSON(val midel.Blueprints) error {
+// 	var data []midel.Blueprints
+// 	databayte, err := os.ReadFile("test1.json")
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if err := json.Unmarshal(databayte, &data); err != nil {
+// 		return err
+// 	}
+
+// 	fmt.Print(data)
+// 	data = append(data, val)
+// 	reqBodyBytes := new(bytes.Buffer)
+// 	json.NewEncoder(reqBodyBytes).Encode(data)
+
+// 	if err := os.WriteFile("test1.json", reqBodyBytes.Bytes(), os.ModePerm); err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }

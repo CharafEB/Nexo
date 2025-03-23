@@ -19,7 +19,6 @@ type framework struct {
 
 	Json interface {
 		searchJSON(val string)
-		readJSON(filter func(map[string]interface{}) bool) []map[string]interface{}
 		WritJSON(val midel.Blueprints) error
 	}
 }

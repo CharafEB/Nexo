@@ -26,6 +26,7 @@ func main() {
 	app.Version = "1.0.0"
 	app.Commands = []*cli.Command{
 		frame.NodeFunc(),
+		frame.CheckStructe(),
 	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)

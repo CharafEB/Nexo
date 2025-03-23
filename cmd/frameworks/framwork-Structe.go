@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
+
 //Structer Stander Place
 
 func CreatStanderNode() {
@@ -37,7 +39,7 @@ func CreatStanderNode() {
 	exec.Command("powershell", "ni", "README.md")
 }
 
-//Structer Advanced Place
+// Structer Advanced Place
 func CreatAdvancedNode() {
 	folders := []string{"src", "config", " public", "views"}
 
@@ -55,7 +57,7 @@ func CreatAdvancedNode() {
 		}
 	}
 
-	foldersP := []string{"controllers", "models", " routes", "services", "utils" , "middlewares" , "tests"}
+	foldersP := []string{"controllers", "models", " routes", "services", "utils", "middlewares", "tests"}
 
 	for _, folderp := range foldersP {
 
@@ -66,4 +68,21 @@ func CreatAdvancedNode() {
 	}
 
 	exec.Command("powershell", "ni", "README.md")
+}
+
+func BuildStructer(valS, valF *[]string, path string) error {
+	err := filepath.WalkDir(path, func(fullPath string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if entry.IsDir() {
+			*valF = append(*valF, fullPath)
+		} else {
+			*valS = append(*valS, fullPath)
+		}
+
+		return err
+	})
+	return err
 }
