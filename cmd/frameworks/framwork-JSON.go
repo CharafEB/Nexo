@@ -4,39 +4,40 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
-
-	"github.com/Nexo/cmd/midel"
 )
 
-func CheckJSON(val string) error {
+func CheckJSON(path, val, filterN string) error {
 	filter := func(data map[string]interface{}) bool {
-		if name, ok := data["name"]; ok {
+		if name, ok := data[filterN]; ok {
 			return name == val
 		}
 		return false
 	}
-	if fmt.Sprint(readJSON(filter)) != "[]" {
-		log.Fatalf("This Name token pick another name Blueprint struct is Name %s Libs %s Struct %s", readJSON(filter)[0]["name"], readJSON(filter)[0]["libs"], readJSON(filter)[0]["struct"])
+	res := readJSON(path, filter)
+	if fmt.Sprint(res) != "[]" {
+		return fmt.Errorf("This Name token pick another name Blueprint struct is Name %s Libs %s Struct %s", res[0]["name"], res[0]["libs"], res[0]["struct"])
 	}
 	return nil
 }
 
-func searchJSON(val string) []map[string]interface{} {
+func searchJSON(filterN, path, val string) []map[string]interface{} {
 	filter := func(data map[string]interface{}) bool {
-		if name, ok := data["name"]; ok {
+		if name, ok := data[filterN]; ok {
 			return name == val
 		}
 		return false
 	}
-	return readJSON(filter)
+	return readJSON(path, filter)
 }
 
-func readJSON(filter func(map[string]interface{}) bool) []map[string]interface{} {
+func readJSON(path string, filter func(map[string]interface{}) bool) []map[string]interface{}{
 	datas := []map[string]interface{}{}
 
-	file, _ := os.ReadFile("../main/test.json")
+	file, _ := os.ReadFile(path)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	json.Unmarshal(file, &datas)
 
 	filteredData := []map[string]interface{}{}
@@ -50,14 +51,14 @@ func readJSON(filter func(map[string]interface{}) bool) []map[string]interface{}
 	return filteredData
 }
 
-func WritJSON(val midel.Blueprints , file string) error {
+func WritJSON[t any](val t, filePath string) error {
 
-	var data []midel.Blueprints
-	databayte, err := os.ReadFile(file)
+	var data []t
+	databayte, err := os.ReadFile(filePath)
 	if err != nil {
-		// if _, err := os.Create(file); err != nil {
-		// 	return err
-		// }
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("failed to read file test.json: %w", err)
+		}
 		return err
 	}
 	if err := json.Unmarshal(databayte, &data); err != nil {
@@ -69,7 +70,7 @@ func WritJSON(val midel.Blueprints , file string) error {
 	reqBodyBytes := new(bytes.Buffer)
 	json.NewEncoder(reqBodyBytes).Encode(data)
 
-	if err := os.WriteFile(file, reqBodyBytes.Bytes(), os.ModePerm); err != nil {
+	if err := os.WriteFile(filePath, reqBodyBytes.Bytes(), os.ModePerm); err != nil {
 
 		return err
 	}

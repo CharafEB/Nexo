@@ -2,6 +2,8 @@ package frameworks
 
 import (
 	"fmt"
+	"strings"
+
 	//"os"
 	"os/exec"
 
@@ -12,10 +14,10 @@ import (
 var (
 	Stract string
 	save   string
-	Blue   string
-	libs   string
-	valF   []string
-	valS   []string
+	//Blue   string
+	libs string
+	valF []string
+	valS []string
 )
 
 // Commande Place
@@ -25,7 +27,6 @@ func NodeFunc() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Destination: &Stract, Name: "Stract", Value: "Free", Usage: "--Stract F -free- , --Stract S -Stander- --Stract A -Adevance- "},
 			&cli.StringFlag{Destination: &save, Name: "Save", Value: "N", Usage: "--Save S [Name of the blue printe]"},
-			&cli.StringFlag{Destination: &Blue, Name: "Blue", Value: "N", Usage: "--Blue [Name of the blue printe]"},
 		},
 		Action: func(ctx *cli.Context) error {
 			cmd := exec.Command("node", "-v")
@@ -35,8 +36,33 @@ func NodeFunc() *cli.Command {
 			}
 			fmt.Printf("%s version: %s", "Node", string(output))
 			name := ctx.Args().Get(0)
-			if err := CheckJSON(name); err != nil {
-				return err
+			//In this case the name is the first value so the user have to enter the name of the blueprint to use it
+			if ctx.NArg() == 1 {
+				// fmt.Printf("Blueprint value is : %s The structe value is : %s \n", ctx.Args().Get(0), Stract)
+				fmt.Println(fmt.Sprint(searchJSON("name", "test.json", ctx.Args().Get(0))))
+				res := searchJSON("name", "../main/test.json", ctx.Args().Get(0))
+				libsJSON := fmt.Sprint(res[0]["libs"])
+				switch res[0]["struct"] {
+				case "S":
+					CreatStanderNode()
+				case "A":
+					CreatAdvancedNode()
+				}
+				cmd := exec.Command("powershell", "npm install ", libsJSON)
+				out, err := cmd.Output()
+				if err != nil {
+					return fmt.Errorf("err")
+				}
+				fmt.Print(string(out))
+			}
+
+			//this case to check if the user went to create a saved struct
+			if Stract != "S" && Stract != "A" {
+				res := searchJSON("struct", "Blue.json", Stract)[0]["structbuild"]
+				valStemp := (res.(map[string]interface{})["file"]).(string)
+				valFtemp := (res.(map[string]interface{})["folder"]).(string)
+				fmt.Printf("The value of the struct is : %s \n", valStemp)
+				CreateNewStructure(valStemp, valFtemp)
 			}
 			switch Stract {
 			case "Free":
@@ -47,11 +73,11 @@ func NodeFunc() *cli.Command {
 				CreatAdvancedNode()
 
 			}
+
 			switch save {
 			case "N":
-				fmt.Print("This is No value \n")
+				fmt.Print("Dont save \n")
 			case "S":
-
 				if n := ctx.NArg(); n != 0 {
 					for i := range n {
 						a := ctx.Args().Get(i + 1)
@@ -72,26 +98,6 @@ func NodeFunc() *cli.Command {
 				Nwelib := midel.Blueprints{Name: name, Libs: libs, StructType: Stract}
 				WritJSON(Nwelib, "test.json")
 			}
-			if ctx.String("Blue") != " " {
-				if ctx.NArg() == 1 {
-					fmt.Printf("Blueprint value is : %s The structe value is : %s \n", ctx.Args().Get(0), Stract)
-					fmt.Println(searchJSON(ctx.Args().Get(0))[0]["libs"])
-					libsJSON := fmt.Sprint(searchJSON(ctx.Args().Get(0))[0]["libs"])
-					switch searchJSON(ctx.Args().Get(0))[0]["struct"] {
-					case "S":
-						CreatStanderNode()
-					case "A":
-						CreatAdvancedNode()
-					}
-					cmd := exec.Command("powershell", "npm install ", libsJSON)
-					out, err := cmd.Output()
-					if err != nil {
-						return fmt.Errorf("err")
-					}
-					fmt.Print(string(out))
-				}
-			}
-
 			return nil
 		},
 	}
@@ -101,27 +107,28 @@ func CheckStructe() *cli.Command {
 	return &cli.Command{
 		Name: "Check",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "Stract", Value: "Free", Usage: "Enter A name of type and save to build a struct"},
+			&cli.StringFlag{Destination: &Stract, Name: "Stract", Required: true, Usage: "Enter A name of type and save to build a struct"},
 		},
 		Action: func(ctx *cli.Context) error {
-			if ctx.String("Stract") != " " && ctx.NArg() ==2{
+			fmt.Printf("%s\n", Stract)
+			if Stract != " " && ctx.NArg() == 0 {
 				// mydir, err := os.Getwd()
 				// if err != nil {
 				// 	fmt.Println(err)
 				// }
-				if err :=BuildStructer(&valS , &valF , "./"); err != nil {
+				if err := BuildStructer(&valS, &valF, "./"); err != nil {
 					return err
 				}
-				StructBuild := midel.StructBuild{File: fmt.Sprint(valS) , Folder: fmt.Sprint(valF)}
-				newS := midel.Blueprints{Name: ctx.Args().Get(0),StructType: ctx.Args().Get(1),StructBuild:StructBuild}
-				fmt.Printf("Folder:%s,File:%s",valF,valS)
+				StructBuild := midel.StructBuildF{File: strings.Join(valS, ","), Folder: strings.Join(valF, ",")}
+				newS := midel.Structrs{StructCall: Stract, StructBuild: StructBuild}
+				fmt.Printf("Folder:%s,File:%s", valF, valS)
 				//fmt.Println(mydir)
-				
-				if err := WritJSON(newS , "Blue.json"); err != nil {
+
+				if err := WritJSON(newS, "Blue.json"); err != nil {
 					return err
 				}
-			}else{
-				return fmt.Errorf("Make sure to enter 2 value [Name] [Struct refrance]")
+			} else {
+				return fmt.Errorf("Make sure to enter 2 value [Struct call]")
 			}
 
 			return nil

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"os"
 	//"github.com/Nexo/cmd/midel"
@@ -38,7 +39,8 @@ func main() {
 	if err := BuilsStruct(&structF, &folder, "./"); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("structF:%s , folder:%s", structF, folder)
+	fmt.Printf("structF:%s , folder:%s \n", structF, folder)
+	fmt.Printf("structF:%s , folder:%s", strings.Join(structF,","), fmt.Sprint(folder))
 
 }
 

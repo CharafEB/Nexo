@@ -1,1 +1,30 @@
-[{"name":"NewTest","libs":"tst1","struct":""},{"name":"achraf","libs":"tst2","struct":""},{"name":"ForCheckFunc","libs":"express","struct":"Free"}]
+[
+    {
+      "name": "NewTest",
+      "libs": "express nodemon",
+      "struct": "",
+      "structbuild": null
+    },
+    {
+      "name": "NewStart",
+      "libs": "express nodemon dotenv",
+      "struct": "",
+      "structbuild": null
+    },
+    {
+      "name": "LastTestForNode",
+      "libs": "express mongoos",
+      "struct": "Free",
+      "structbuild": null
+    },
+    {
+      "name": "achraf",
+      "libs": "exprss mongoos",
+      "struct": "S",
+      "structbuild": {
+        "file": ["Blue.json", "main.go", "test.json"],
+        "folder": ["./"]
+      }
+    }
+  ]
+  
