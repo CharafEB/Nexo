@@ -14,7 +14,7 @@ Nexo is a powerful and flexible CLI tool built with **Go** and **urfave/cli v2**
 
 ### **Quick Install**
 1. **Download the latest release** from [GitHub Releases](https://github.com/CharafEB/Nexo/releases/download/V1.0.0/nexo.exe).
-2. **Creat** `nexo` foler in `C:/` .
+2. **create** `nexo` foler in `C:/` .
 3. **Move `nexo.exe` to a desired location** (e.g., `C:\nexo`).
 
 Now, you can use `nexo` from anywhere in the terminal! 🎉
