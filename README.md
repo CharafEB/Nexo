@@ -70,5 +70,5 @@ If you find this tool helpful, give it a ⭐ on GitHub!
 
 ---
 
-🔗 **GitHub Repository**: [your-username/your-repo](https://github.com/CharafEB/Nexo)
+🔗 **GitHub Repository**: [CharafEB/Nexo](https://github.com/CharafEB/Nexo)
 
