@@ -48,7 +48,7 @@ c:/nexo/nexo.exe Node project2
 This will scaffold a project using the saved `project2` template.
 
 ---
-##🔮 Future Updates
+## 🔮 Future Updates
 
 In the next updates, support for additional languages such as Go, Python, Java, and PHP will be added! Stay tuned! 🚀
 
